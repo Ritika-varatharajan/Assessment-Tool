@@ -1,58 +1,101 @@
-/* Container for the role selection area */
-.roleContainer {
-  margin-bottom: 24px;
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f8fafc;
 }
 
-.inputLabel {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: #475569;
-  margin-bottom: 8px;
+.authCard {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  padding: 48px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04),
+              0 8px 10px -6px rgba(0, 0, 0, 0.04);
 }
 
-/* Flexbox/Grid for the buttons */
-.roleButtons {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brand h1 {
+  font-size: 2.2rem;
+  color: #1e293b;
+  letter-spacing: -1px;
+}
+
+.brand span {
+  color: #6366f1;
+}
+
+.brand p {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.roleBtn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 8px;
-  background: #ffffff;
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.field input,
+.field select {
+  padding: 12px 16px;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #64748b;
+  border-radius: 10px;
+  background: #fdfdfd;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+}
+
+/* ✅ FIX: Apply focus to both input & select */
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* Optional hover effect */
+.field input:hover,
+.field select:hover {
+  border-color: #cbd5f5;
+}
+
+.submitBtn {
+  background-color: #1e293b;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  margin-top: 10px;
 }
 
-.roleIcon {
-  font-size: 18px;
-  margin-bottom: 4px;
+.submitBtn:hover {
+  background-color: #334155;
+  transform: translateY(-1px);
 }
 
-/* Active State - Professional Indigo theme */
-.roleBtnActive {
-  border-color: #4f46e5;
-  background-color: #eff6ff;
-  color: #4f46e5;
-  box-shadow: 0 0 0 1px #4f46e5;
-}
-
-.roleBtn:hover:not(.roleBtnActive) {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-/* Ensure the submit button doesn't feel cramped */
-.loginBtn {
-  margin-top: 16px;
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

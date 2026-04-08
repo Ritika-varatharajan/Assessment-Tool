@@ -1,0 +1,97 @@
+.signupContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #F5EEE6;
+  padding: 20px;
+}
+
+.signupCard {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 450px;
+}
+
+.formHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.formHeader h2 {
+  color: #333;
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.formHeader p {
+  color: #777;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.inputGroup {
+  margin-bottom: 1.25rem;
+}
+
+.inputGroup label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: #444;
+}
+
+.inputGroup input, 
+.inputGroup select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.inputGroup input:focus, 
+.inputGroup select:focus {
+  outline: none;
+  border-color: #5BA4A4;
+  box-shadow: 0 0 0 3px rgba(91, 164, 164, 0.1);
+}
+
+.signupButton {
+  width: 100%;
+  padding: 1rem;
+  background-color: #C05842;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
+}
+
+.signupButton:hover {
+  background-color: #a64a36;
+}
+
+.formFooter {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.formFooter a {
+  color: #5BA4A4;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.formFooter a:hover {
+  text-decoration: underline;
+}
