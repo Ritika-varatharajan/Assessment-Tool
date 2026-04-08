@@ -33,7 +33,7 @@ export default function Register() {
       
 
       <p>
-        Already have an account? <Link href="/login">Login here</Link>
+        Already have an account? <Link href="/login">Login</Link>
       </p>
     </main>
     </center>

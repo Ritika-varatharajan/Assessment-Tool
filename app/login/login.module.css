@@ -1,0 +1,58 @@
+/* Container for the role selection area */
+.roleContainer {
+  margin-bottom: 24px;
+}
+
+.inputLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+/* Flexbox/Grid for the buttons */
+.roleButtons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.roleBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.roleIcon {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+/* Active State - Professional Indigo theme */
+.roleBtnActive {
+  border-color: #4f46e5;
+  background-color: #eff6ff;
+  color: #4f46e5;
+  box-shadow: 0 0 0 1px #4f46e5;
+}
+
+.roleBtn:hover:not(.roleBtnActive) {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* Ensure the submit button doesn't feel cramped */
+.loginBtn {
+  margin-top: 16px;
+}

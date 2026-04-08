@@ -1,59 +1,57 @@
 "use client";
 import Link from "next/link";
+import styles from "./home.module.css";
 
 export default function Home() {
   return (
-    <section>
-      <header>
-        <h1>Assessment Tool</h1>
-        <nav aria-label="Main navigation">
-          <Link href="/">Home</Link> |{" "}
-          <Link href="#about">About</Link> |{" "}
-          <Link href="/login">Login</Link> |{" "}
-          <Link href="/register">Register</Link>
+    <section className={styles.container}>
+  
+      <header className={styles.header}>
+        <h1 className={styles.logo}>Assessment Tool</h1>
+        
+        <nav className={styles.nav}>
+          <Link href="/">Home</Link>
+          <Link href="#about">About</Link>
+          <Link href="#features">Features</Link>
+          <Link href="#roles">Roles</Link>
+         <button className={styles.buton}><a href="/login" className={styles.btnPrimary}>Login</a></button> 
+          <button className={styles.buton}><a href="/register" className={styles.btnSecondary}>Register</a></button>
         </nav>
-        <hr />
       </header>
-      <br>
-      </br><br>
-      </br>
-      <main>
-        <h2>Welcome to the Assessment Tool</h2>
+      <hr></hr><center>
+      <img src="/home.jpg" height="400px" width="400px"></img></center>
+      <section className={styles.hero}>
+        <h2>Assessment Tool</h2>
         <p>
-          This platform helps educators create exams and students take them
-          online easily.
+          Create, manage, and evaluate assessments efficiently with powerful analytics.
         </p>
-<br>
-      </br><br>
-      </br><div>
-        <h2 id="about">About</h2>
-        <h3>Our Objective</h3>
+        
+      </section>
+      <section id="about" className={styles.section}>
+        <h2>About the Project</h2>
         <p>
-          To simplify the assessment process with an easy-to-use and efficient
-          system.
+          The Assessment Tool is designed to simplify evaluation processes in
+          educational and professional environments by providing a secure,
+          scalable, and user-friendly platform.
         </p>
-        <br>
-      </br>
-      </div><br>
-      </br><br>
-      </br>
-        <div>
-        <h3>Features</h3>
-        <ul>
-          <li>Create quizzes, tests, and exams</li>
-          <li>Multiple question formats (MCQ, True/False, Essay)</li>
-          <li>Automatic grading system</li>
-          <li>Instant feedback</li>
-          <li>Performance analytics</li>
-        </ul>
-        </div>
-      </main>
-      <br>
-      </br>
+      </section>
 
-      <footer>
-        <p>© 2026 Assessment Tool Project</p>
+      <section id="features" className={styles.section}>
+        <h2>Key Features</h2>
+        <div className={styles.grid}>
+            <h3>Assessment Creation</h3>
+            <p>Create quizzes, exams, and surveys with multiple formats.</p>
+            <h3>Auto Grading</h3>
+            <p>Automatically evaluate MCQs, True/False and more.</p>
+            <h3>Analytics</h3>
+            <p>Track performance with detailed reports and insights.</p>
+            <h3>Secure Access</h3>
+            <p>Role-based authentication for Admin, Educators, and Students.</p>
+        </div>
+      </section>
+      <footer className={styles.footer}>
+        <p>© 2026 Assessment Tool | Project</p>
       </footer>
-  </section>
+    </section>
   );
 }
