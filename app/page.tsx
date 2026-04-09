@@ -6,9 +6,8 @@ export default function Home() {
   return (
     <section className={styles.container}>
 
-      {/* Header */}
       <header className={styles.header}>
-        <h1 className={styles.logo}>Assess<span>Me</span></h1>
+        <h1 className={styles.logo}>Assessment<span>Tool</span></h1>
         
         <nav className={styles.nav}>
           <Link href="/">Home</Link>
@@ -21,24 +20,23 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <h2>Smart Assessment Platform</h2>
+          <h2>Smart Assessment Tool Platform</h2>
           <p>
             Create, manage, and evaluate assessments with ease. Built for
             educators, administrators, and students.
           </p>
           <div className={styles.heroButtons}>
             <Link href="/register" className={styles.btnPrimary}>Get Started</Link>
-            <Link href="#features" className={styles.btnOutline}>Explore Features</Link>
+
           </div>
         </div>
 
         <img src="/home.jpg" alt="Assessment" className={styles.heroImage} />
       </section>
 
-      {/* About */}
+
       <section id="about" className={styles.section}>
         <h2>About the Project</h2>
         <p>
@@ -48,7 +46,7 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Features */}
+    
       <section id="features" className={styles.section}>
         <h2>Key Features</h2>
         <div className={styles.grid}>
@@ -69,19 +67,15 @@ export default function Home() {
 
           <div className={styles.card}>
             <h3>Secure Access</h3>
-            <p>Role-based authentication for Admin, Educators, and Students.</p>
+            <p>Role-based authentication for  Educators, and Students.</p>
           </div>
         </div>
       </section>
 
-      {/* Roles */}
       <section id="roles" className={styles.section}>
         <h2>User Roles</h2>
         <div className={styles.grid}>
-          <div className={styles.card}>
-            <h3>Administrator</h3>
-            <p>Manage users, roles, and system analytics.</p>
-          </div>
+          
           <div className={styles.card}>
             <h3>Educator</h3>
             <p>Create and manage assessments, monitor student progress.</p>
@@ -93,9 +87,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className={styles.footer}>
-        <p>© 2026 AssessMe | Capstone Project</p>
+        <p>© 2026 Assessment Tool | All Rights Reserved.</p>
       </footer>
     </section>
   );

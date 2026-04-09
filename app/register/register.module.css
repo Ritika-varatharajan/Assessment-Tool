@@ -5,6 +5,10 @@
   min-height: 100vh;
   background-color: #F5EEE6;
   padding: 20px;
+  background-image: url(/home.jpg);
+  background-size: cover;        
+  background-position: center;   
+  background-repeat: no-repeat;
 }
 
 .signupCard {

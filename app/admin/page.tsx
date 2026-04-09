@@ -1,126 +1,138 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import styles from "./admin.module.css";
 
-interface Stats {
-  users: number;
-  assessments: number;
-  students: number;
-  reports: number;
+interface User {
+  fullName: string;
+  email: string;
+  role: "Student" | "Educator" | "Administrator";
 }
 
-const AdminDashboard = () => {
-  const router = useRouter();
+export default function AdminDashboard() {
+  const currentUser = {
+    email: "admin@test.com",
+    role: "Administrator",
+  };
 
-  const [stats, setStats] = useState<Stats>({
-    users: 0,
-    assessments: 0,
-    students: 0,
-    reports: 0,
-  });
+  const [users, setUsers] = useState<User[]>([
+    {
+      fullName: "John",
+      email: "john@example.com",
+      role: "Student",
+    },
+    {
+      fullName: "Alice",
+      email: "alice@example.com",
+      role: "Educator",
+    },
+    {
+      fullName: "Bob",
+      email: "admin@test.com",
+      role: "Administrator",
+    },
+  ]);
 
-  const [user, setUser] = useState<any>(null);
+  const deleteUser = (email: string) => {
+    const updated = users.filter((u) => u.email !== email);
+    setUsers(updated);
+  };
+  const updateuser = 
 
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+  const changeRole = (email: string, role: User["role"]) => {
+    const updated = users.map((u) =>
+      u.email === email ? { ...u, role } : u
+    );
+    setUsers(updated);
+  };
 
-    // 🔐 Protect admin route
-    if (!storedUser || storedUser.role !== "Administrator") {
-      router.push("/login");
-      return;
-    }
-
-    setUser(storedUser);
-
-    // 📊 Dynamic stats (demo purpose)
-    setStats({
-      users: 1,
-      assessments: Math.floor(Math.random() * 10) + 1,
-      students: Math.floor(Math.random() * 20) + 1,
-      reports: Math.floor(Math.random() * 5) + 1,
-    });
-  }, [router]);
-
-  // 🚪 Logout function
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    router.push("/login");
+    alert("Logged out!");
+    location.reload();
   };
 
   return (
     <div className={styles.container}>
-      {/* Sidebar */}
-      <aside className={styles.sidebar}>
-        <h2 className={styles.logo}>Admin Panel</h2>
-        <ul>
-          <li onClick={() => router.push("/admin")}>Dashboard</li>
-          <li>Manage Users</li>
-          <li>Assessments</li>
-          <li>Reports</li>
-          <li>Settings</li>
-        </ul>
-      </aside>
+      <h1 className={styles.title}>Admin Dashboard</h1>
 
-      {/* Main Content */}
-      <main className={styles.main}>
-        {/* Header */}
-        <header className={styles.header}>
-          <h1>
-            Welcome, {user?.email || "Admin"}
-          </h1>
+      <p className={styles.welcome}>
+        Welcome, {currentUser.email}
+      </p>
 
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: "8px 16px",
-              background: "#ef4444",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-            }}
-          >
-            Logout
-          </button>
-        </header>
+      <button className={styles.logoutBtn} onClick={handleLogout}>
+        Logout
+      </button>
 
-        {/* Cards */}
-        <section className={styles.cards}>
-          <div className={styles.card}>
-            <h3>Total Users</h3>
-            <p>{stats.users}</p>
-          </div>
+      <hr className={styles.divider} />
 
-          <div className={styles.card}>
-            <h3>Assessments</h3>
-            <p>{stats.assessments}</p>
-          </div>
+      <h2 className={styles.sectionTitle}>Analytics</h2>
+      <p>Total Users: {users.length}</p>
+      <p>
+        Students: {users.filter((u) => u.role === "Student").length}
+      </p>
+      <p>
+        Educators: {users.filter((u) => u.role === "Educator").length}
+      </p>
+      <p>
+        Admins: {users.filter((u) => u.role === "Administrator").length}
+      </p>
 
-          <div className={styles.card}>
-            <h3>Active Students</h3>
-            <p>{stats.students}</p>
-          </div>
+      <hr className={styles.divider} />
 
-          <div className={styles.card}>
-            <h3>Reports Generated</h3>
-            <p>{stats.reports}</p>
-          </div>
-        </section>
+      <h2 className={styles.sectionTitle}>Manage Users</h2>
 
-        {/* Activity */}
-        <section className={styles.section}>
-          <h2>Recent Activity</h2>
-          <ul>
-            <li>User registered</li>
-            <li>New assessment created</li>
-            <li>Report generated</li>
-          </ul>
-        </section>
-      </main>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.email}>
+              <td>{user.fullName}</td>
+              <td>{user.email}</td>
+
+              <td>
+                <select
+                  className={styles.select}
+                  value={user.role}
+                  onChange={(e) =>
+                    changeRole(
+                      user.email,
+                      e.target.value as User["role"]
+                    )
+                  }
+                >
+                  <option>Student</option>
+                  <option>Educator</option>
+                  <option>Administrator</option>
+                </select>
+              </td>
+
+              <td>
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => deleteUser(user.email)}
+                >
+                  Delete
+                </button>
+              </td>
+              <td>
+                <button
+                  className={styles.updateBtn}
+                  onClick={() => updateuser(user.email)}
+                >
+                  Update
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
-
-export default AdminDashboard;
+}
