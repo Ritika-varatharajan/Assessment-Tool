@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "Student", // ✅ must match register roles
+    role: "Student", 
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,14 +31,12 @@ export default function LoginPage() {
     setTimeout(() => {
       const { role } = formData;
 
-      console.log("ROLE:", role); // ✅ Debug check
+      console.log("ROLE:", role); 
 
-      // ✅ Save user data (important for dashboard)
       localStorage.setItem("user", JSON.stringify(formData));
 
-      // ✅ Correct routing based on folder names
       if (role === "Administrator") {
-        router.push("/admin"); // ✅ FIXED (was /admindashboard ❌)
+        router.push("/admin"); 
       } else if (role === "Educator") {
         router.push("/educator");
       } else {
@@ -54,9 +52,9 @@ export default function LoginPage() {
       <div className={styles.authCard}>
         <div className={styles.brand}>
           <h1>
-            Assess<span>Me</span>
+            Assessment <span>Tool</span>
           </h1>
-          <p>The professional way to evaluate talent.</p>
+          <p>Login</p>
         </div>
 
         <form onSubmit={handleLogin} className={styles.form}>
@@ -65,7 +63,7 @@ export default function LoginPage() {
             <input
               name="email"
               type="email"
-              placeholder="e.g. alex@university.edu"
+              placeholder="e.g. alice@gmail.com"
               value={formData.email}
               onChange={handleChange}
               required

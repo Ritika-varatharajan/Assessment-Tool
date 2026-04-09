@@ -4,6 +4,10 @@
   justify-content: center;
   min-height: 100vh;
   background-color: #f8fafc;
+  background-image: url(/home.jpg);
+  background-size: cover;        
+  background-position: center;   
+  background-repeat: no-repeat;
 }
 
 .authCard {
@@ -64,7 +68,7 @@
   transition: all 0.25s ease;
 }
 
-/* ✅ FIX: Apply focus to both input & select */
+
 .field input:focus,
 .field select:focus {
   outline: none;
@@ -72,7 +76,6 @@
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
-/* Optional hover effect */
 .field input:hover,
 .field select:hover {
   border-color: #cbd5f5;

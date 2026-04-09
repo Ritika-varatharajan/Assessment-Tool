@@ -1,15 +1,12 @@
 "use client";
 
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import styles from './register.module.css';
-import { register } from 'module';
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import styles from "./register.module.css";
 
-// Define roles
-type UserRole = 'Student' | 'Educator' | 'Administrator';
+type UserRole = "Student" | "Educator" | "Administrator";
 
-// Form data type
 interface SignupFormData {
   fullName: string;
   email: string;
@@ -17,18 +14,19 @@ interface SignupFormData {
   role: UserRole;
 }
 
-const Signup: React.FC = () => {
+export default function RegisterPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState<SignupFormData>({
-    fullName: '',
-    email: '',
-    password: '',
-    role: 'Student',
+    fullName: "",
+    email: "",
+    password: "",
+    role: "Student",
   });
 
-  // Handle input changes
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -37,81 +35,76 @@ const Signup: React.FC = () => {
     }));
   };
 
-  // Handle form submit
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // ✅ Basic validation
     if (formData.password.length < 6) {
       alert("Password must be at least 6 characters");
       return;
     }
 
-    // ✅ Save to localStorage (for demo)
+    // Save to localStorage (demo only)
     localStorage.setItem("user", JSON.stringify(formData));
 
-    console.log('Registered User:', formData);
+    console.log("Registered User:", formData);
 
-    // ✅ Redirect to login page
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
     <div className={styles.signupContainer}>
       <div className={styles.signupCard}>
-        
         <header className={styles.formHeader}>
           <h2>Create Account</h2>
           <p>Join the Assessment Tool platform</p>
         </header>
 
         <form onSubmit={handleSubmit} className={styles.signupForm}>
-
           <div className={styles.inputGroup}>
             <label htmlFor="fullName">Full Name</label>
-            <input 
+            <input
               id="fullName"
-              type="text" 
-              name="fullName" 
+              type="text"
+              name="fullName"
               placeholder="Enter your name"
               value={formData.fullName}
               onChange={handleChange}
-              required 
+              required
             />
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email Address</label>
-            <input 
+            <input
               id="email"
-              type="email" 
-              name="email" 
+              type="email"
+              name="email"
               placeholder="name@example.com"
               value={formData.email}
               onChange={handleChange}
-              required 
+              required
             />
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
-            <input 
+            <input
               id="password"
-              type="password" 
-              name="password" 
+              type="password"
+              name="password"
               placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
-              required 
+              required
             />
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="role">User Role</label>
-            <select 
-              id="role" 
-              name="role" 
-              value={formData.role} 
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
               onChange={handleChange}
             >
               <option value="Student">Student / Participant</option>
@@ -130,10 +123,7 @@ const Signup: React.FC = () => {
             Already have an account? <Link href="/login">Login</Link>
           </p>
         </footer>
-
       </div>
     </div>
   );
-};
-
-export default register;
+}
