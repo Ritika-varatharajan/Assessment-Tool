@@ -112,7 +112,7 @@ const AdminDashboard = () => {
         {/* Activity */}
         <section className={styles.section}>
           <h2>Recent Activity</h2>
-          <ul>
+          <ul
             <li>User registered</li>
             <li>New assessment created</li>
             <li>Report generated</li>
