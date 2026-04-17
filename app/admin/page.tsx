@@ -25,6 +25,7 @@ export default function AdminDashboard() {
 
   const [editUser, setEditUser] = useState<any>(null);
   const [editAssessment, setEditAssessment] = useState<any>(null);
+  
 
   useEffect(() => {
     fetchData();
@@ -66,7 +67,8 @@ export default function AdminDashboard() {
 
   const filteredUsers =
     filterRole === "All" ? users : users.filter((u) => u.role === filterRole);
-    const getUserDetails = (userId: string) => {
+ 
+      const getUserDetails = (userId: string | undefined) => {
   const user = users.find((u) => u.id === userId);
   return user
     ? `${user.fullName} (${user.role})`
@@ -232,7 +234,8 @@ export default function AdminDashboard() {
         <td>{a.timeLimit} mins</td>
 
         <td>
-          {getUserDetails(a.educatorId)}
+         
+          {getUserDetails(a.educatorId || "")}
         </td>
 
         <td className={styles.actionCell}>

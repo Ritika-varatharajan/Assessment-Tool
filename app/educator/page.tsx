@@ -358,7 +358,8 @@ export default function EducatorDashboard() {
           <div className={styles.modal}>
             <AssessmentForm
               initialData={editAssessment}
-              onSubmit={async (data) => {
+             
+                onSubmit={async (data: any) => {
                 const payload = {
                   ...data,
                   educatorId: educator.id,
