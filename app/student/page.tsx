@@ -211,16 +211,17 @@ export default function StudentDashboard() {
                     0
                   ) || 0;
 
-                const percentage = totalMarks
-                  ? ((r.score / totalMarks) * 100).toFixed(1)
-                  : 0;
+                
+const percentage = totalMarks
+  ? (r.score / totalMarks) * 100
+  : 0;
 
-                let feedback = "";
-                if (percentage >= 80) feedback = "Excellent 🎉";
-                else if (percentage >= 60) feedback = "Good 👍";
-                else if (percentage >= 40) feedback = "Average 🙂";
-                else feedback = "Needs Improvement ⚠️";
+let feedback = "";
 
+if (percentage >= 80) feedback = "Excellent 🎉";
+else if (percentage >= 60) feedback = "Good 👍";
+else if (percentage >= 40) feedback = "Average 🙂";
+else feedback = "Needs Improvement ⚠️";
                 return (
                   <div key={r.id} className={styles.resultCard}>
                     <h3>{assessment?.title}</h3>
