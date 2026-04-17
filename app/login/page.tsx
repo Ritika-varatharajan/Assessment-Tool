@@ -73,7 +73,7 @@ export default function LoginPage() {
       }
     }
 
-    setIsSubmitting(false);
+    
   };
 
   return (
