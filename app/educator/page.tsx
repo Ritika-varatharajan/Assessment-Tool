@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./educator.module.css";
 import AssessmentForm from "../components/AssessmentForm";
+type FormData = {
+  title: string;
+  questions: any[];
+};
 
 export default function EducatorDashboard() {
   const [assessments, setAssessments] = useState<any[]>([]);
