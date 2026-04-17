@@ -357,35 +357,34 @@ export default function EducatorDashboard() {
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
             <AssessmentForm
-              initialData={editAssessment}
-             
-                onSubmit={async (data: any) => {
-                const payload = {
-                  ...data,
-                  educatorId: educator.id,
-                  totalMarks: data.questions.reduce(
-                    (sum: number, q: any) => sum + (q.marks || 0),
-                    0
-                  ),
-                };
+  initialData={editAssessment}
+  onSubmit={async (data: FormData) => {
+    const payload = {
+      ...data,
+      educatorId: educator.id,
+      totalMarks: data.questions.reduce(
+        (sum: number, q: any) => sum + (q.marks || 0),
+        0
+      ),
+    };
 
-                if (editAssessment) {
-                  await axios.put(
-                    `http://localhost:5000/assessments/${editAssessment.id}`,
-                    payload
-                  );
-                  setEditAssessment(null);
-                } else {
-                  await axios.post(
-                    "http://localhost:5000/assessments",
-                    payload
-                  );
-                  setShowModal(false);
-                }
+    if (editAssessment) {
+      await axios.put(
+        `http://localhost:5000/assessments/${editAssessment.id}`,
+        payload
+      );
+      setEditAssessment(null);
+    } else {
+      await axios.post(
+        "http://localhost:5000/assessments",
+        payload
+      );
+      setShowModal(false);
+    }
 
-                fetchData();
-              }}
-            />
+    fetchData();
+  }}
+/>
 
             <button
               className={styles.closeBtn}
