@@ -13,7 +13,6 @@ export default function Home() {
           <Link href="/">Home</Link>
           <Link href="#about">About</Link>
           <Link href="#features">Features</Link>
-          <Link href="#roles">Roles</Link>
           
           <Link href="/login" className={styles.btnPrimary}>Login</Link>
           <Link href="/register" className={styles.btnSecondary}>Register</Link>
@@ -22,7 +21,7 @@ export default function Home() {
 
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <h2>Smart Assessment Tool Platform</h2>
+          <h2>Smart Assessment Tool </h2>
           <p>
             Create, manage, and evaluate assessments with ease. Built for
             educators, administrators, and students.
@@ -37,14 +36,18 @@ export default function Home() {
       </section>
 
 
+      
       <section id="about" className={styles.section}>
-        <h2>About the Project</h2>
-        <p>
-          The Assessment Tool is a modern platform designed to simplify
-          evaluation processes in educational and professional environments.
-          It ensures secure, scalable, and efficient assessment management.
-        </p>
-      </section>
+  <h2>About</h2>
+
+  <div className={styles.card}>
+    <p>
+      The Assessment Tool is a smart and easy-to-use platform for creating and managing tests 📝. 
+      Educators can design assessments, assign them to students, and track performance effortlessly 📊. 
+      Students can take tests with a timer ⏳ and get instant results, making learning more interactive and effective 🚀.
+    </p>
+  </div>
+</section>
 
     
       <section id="features" className={styles.section}>
@@ -72,20 +75,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="roles" className={styles.section}>
-        <h2>User Roles</h2>
-        <div className={styles.grid}>
-          
-          <div className={styles.card}>
-            <h3>Educator</h3>
-            <p>Create and manage assessments, monitor student progress.</p>
-          </div>
-          <div className={styles.card}>
-            <h3>Student</h3>
-            <p>Take assessments and view feedback instantly.</p>
-          </div>
-        </div>
-      </section>
+     
 
       <footer className={styles.footer}>
         <p>© 2026 Assessment Tool | All Rights Reserved.</p>

@@ -1,149 +1,439 @@
 "use client";
-import { useState } from "react";
-import styles from "./admin.module.css";
 
-interface User {
-  fullName: string;
-  email: string;
-  role: "Student" | "Educator" | "Administrator";
-}
+import { useEffect, useState } from "react";
+import axios from "axios";
+import styles from "./admin.module.css";
+import AssessmentForm from "../components/AssessmentForm";
 
 export default function AdminDashboard() {
-  const currentUser = {
-    email: "admin@test.com",
-    role: "Administrator",
-  };
+  const [users, setUsers] = useState<any[]>([]);
+  const [assessments, setAssessments] = useState<any[]>([]);
+  const [results, setResults] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
-  const [users, setUsers] = useState<User[]>([
-    {
-      fullName: "John",
-      email: "john@example.com",
-      role: "Student",
-    },
-    {
-      fullName: "Alice",
-      email: "alice@example.com",
-      role: "Educator",
-    },
-    {
-      fullName: "Bob",
-      email: "admin@test.com",
-      role: "Administrator",
-    },
-  ]);
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [showAssessmentModal, setShowAssessmentModal] = useState(false);
 
-  const deleteUser = (email: string) => {
-    const updated = users.filter((u) => u.email !== email);
-    setUsers(updated);
-  };
-  const updateuser = 
+  const [filterRole, setFilterRole] = useState("All");
 
-  const changeRole = (email: string, role: User["role"]) => {
-    const updated = users.map((u) =>
-      u.email === email ? { ...u, role } : u
-    );
-    setUsers(updated);
+  const [newUser, setNewUser] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    role: "Student",
+  });
+
+  const [editUser, setEditUser] = useState<any>(null);
+  const [editAssessment, setEditAssessment] = useState<any>(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [u, a, r] = await Promise.all([
+        axios.get("http://localhost:5000/users"),
+        axios.get("http://localhost:5000/assessments"),
+        axios.get("http://localhost:5000/results"),
+      ]);
+
+      setUsers(u.data);
+      setAssessments(a.data);
+      setResults(r.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleLogout = () => {
-    alert("Logged out!");
-    location.reload();
+    if (!confirm("Are you sure you want to logout?")) return;
+    localStorage.removeItem("token");
+    window.location.href = "/login";
   };
+
+  const deleteUser = async (id: string) => {
+    if (!confirm("Delete user?")) return;
+    await axios.delete(`http://localhost:5000/users/${id}`);
+    fetchData();
+  };
+
+  const deleteAssessment = async (id: string) => {
+    if (!confirm("Delete assessment?")) return;
+    await axios.delete(`http://localhost:5000/assessments/${id}`);
+    fetchData();
+  };
+
+  const filteredUsers =
+    filterRole === "All" ? users : users.filter((u) => u.role === filterRole);
+    const getUserDetails = (userId: string) => {
+  const user = users.find((u) => u.id === userId);
+  return user
+    ? `${user.fullName} (${user.role})`
+    : "Unknown";
+};
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Admin Dashboard</h1>
+      {/* SIDEBAR */}
+      <div className={styles.sidebar}>
+        <h2>Admin Panel</h2>
 
-      <p className={styles.welcome}>
-        Welcome, {currentUser.email}
-      </p>
+        <button onClick={() => setActiveTab("dashboard")}>Dashboard</button>
+        <button onClick={() => setActiveTab("users")}>Users</button>
+        <button onClick={() => setActiveTab("assessments")}>
+          Assessments
+        </button>
+        <button onClick={() => setActiveTab("reports")}>Reports</button>
 
-      <button className={styles.logoutBtn} onClick={handleLogout}>
-        Logout
-      </button>
+        <button className={styles.logoutBtn} onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
 
-      <hr className={styles.divider} />
+      {/* MAIN */}
+      <div className={styles.main}>
+        {/* DASHBOARD */}
+        {activeTab === "dashboard" && (
+          <>
+            <h1>Dashboard Overview</h1>
 
-      <h2 className={styles.sectionTitle}>Analytics</h2>
-      <p>Total Users: {users.length}</p>
-      <p>
-        Students: {users.filter((u) => u.role === "Student").length}
-      </p>
-      <p>
-        Educators: {users.filter((u) => u.role === "Educator").length}
-      </p>
-      <p>
-        Admins: {users.filter((u) => u.role === "Administrator").length}
-      </p>
-      <p> this is check for working</p>
+            <div className={styles.cardContainer}>
+              <div className={styles.card}>
+                <h3>Total Users</h3>
+                <p>{users.length}</p>
+              </div>
 
-      <hr className={styles.divider} />
+              <div className={styles.card}>
+                <h3>Students</h3>
+                <p>{users.filter((u) => u.role === "Student").length}</p>
+              </div>
 
-      <h2 className={styles.sectionTitle}>Manage Users</h2>
+              <div className={styles.card}>
+                <h3>Educators</h3>
+                <p>{users.filter((u) => u.role === "Educator").length}</p>
+              </div>
 
-        {/* Activity */}
-        <section className={styles.section}>
-          <h2>Recent Activity</h2>
-          <ul
-            <li>User registered</li>
-            <li>New assessment created</li>
-            <li>Report generated</li>
-          </ul>
-        </section>
-      </main>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+              <div className={styles.card}>
+                <h3>Assessments</h3>
+                <p>{assessments.length}</p>
+              </div>
+            </div>
 
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.email}>
-              <td>{user.fullName}</td>
-              <td>{user.email}</td>
+            <div className={styles.box}>
+              <h2>Recent Assessments</h2>
+              <ul>
+                {assessments.slice(0, 5).map((a) => (
+                  <li key={a.id}>{a.title}</li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
 
-              <td>
-                <select
-                  className={styles.select}
-                  value={user.role}
-                  onChange={(e) =>
-                    changeRole(
-                      user.email,
-                      e.target.value as User["role"]
-                    )
+        {/* USERS */}
+        {activeTab === "users" && (
+          <>
+            <h1>User Management</h1>
+
+            <div className={styles.topBar}>
+              <button
+                className={styles.button}
+                onClick={() => {
+                  setEditUser(null);
+                  setNewUser({
+                    fullName: "",
+                    email: "",
+                    password: "",
+                    role: "Student",
+                  });
+                  setShowUserModal(true);
+                }}
+              >
+                + Add User
+              </button>
+
+              <select onChange={(e) => setFilterRole(e.target.value)}>
+                <option>All</option>
+                <option>Student</option>
+                <option>Educator</option>
+                <option>Admin</option>
+              </select>
+            </div>
+
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredUsers.map((u) => (
+                  <tr key={u.id}>
+                    <td>{u.fullName}</td>
+                    <td>{u.email}</td>
+                    <td>{u.role}</td>
+                    <td className={styles.actionCell}>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() => {
+                          setEditUser(u);
+                          setShowUserModal(true);
+                        }}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => deleteUser(u.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        {/* ASSESSMENTS */}
+        {activeTab === "assessments" && (
+          <>
+            <h1>Assessments</h1>
+
+            <button
+              className={styles.button}
+              onClick={() => setShowAssessmentModal(true)}
+            >
+              + Create Assessment
+            </button>
+
+            <table className={styles.table}>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Time</th>
+      <th>Created By</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {assessments.map((a) => (
+      <tr key={a.id}>
+        <td>{a.title}</td>
+
+        <td>{a.timeLimit} mins</td>
+
+        <td>
+          {getUserDetails(a.educatorId)}
+        </td>
+
+        <td className={styles.actionCell}>
+          <button
+            className={styles.editBtn}
+            onClick={() => setEditAssessment(a)}
+          >
+            Edit
+          </button>
+
+          <button
+            className={styles.deleteBtn}
+            onClick={() => deleteAssessment(a.id)}
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+          </>
+        )}
+
+        {/* REPORTS */}
+        {activeTab === "reports" && (
+          <>
+            <h1>Reports & Analytics</h1>
+
+            <div className={styles.cardContainer}>
+              <div className={styles.card}>
+                <h3>Total Attempts</h3>
+                <p>{results.length}</p>
+              </div>
+
+              <div className={styles.card}>
+                <h3>Average Score</h3>
+                <p>
+                  {results.length > 0
+                    ? (
+                        results.reduce((sum, r) => sum + r.score, 0) /
+                        results.length
+                      ).toFixed(2)
+                    : 0}
+                </p>
+              </div>
+            </div>
+
+            <h2>Student Performance</h2>
+            <table className={styles.table}>
+              <tbody>
+                {results.map((r) => {
+                  const user = users.find((u) => u.id === r.userId);
+                  const assessment = assessments.find(
+                    (a) => a.id === r.assessmentId
+                  );
+
+                  return (
+                    <tr key={r.id}>
+                      <td>{user?.fullName || "Unknown"}</td>
+                      <td>{assessment?.title || "Unknown"}</td>
+                      <td>{r.score}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </>
+        )}
+      </div>
+
+      {/* USER MODAL */}
+      {showUserModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h2>{editUser ? "Edit User" : "Add User"}</h2>
+
+            <input
+              className={styles.input}
+              placeholder="Full Name"
+              value={editUser ? editUser.fullName : newUser.fullName}
+              onChange={(e) =>
+                editUser
+                  ? setEditUser({ ...editUser, fullName: e.target.value })
+                  : setNewUser({ ...newUser, fullName: e.target.value })
+              }
+            />
+
+            <input
+              className={styles.input}
+              placeholder="Email"
+              value={editUser ? editUser.email : newUser.email}
+              onChange={(e) =>
+                editUser
+                  ? setEditUser({ ...editUser, email: e.target.value })
+                  : setNewUser({ ...newUser, email: e.target.value })
+              }
+            />
+
+            {!editUser && (
+              <input
+                className={styles.input}
+                type="password"
+                placeholder="Password"
+                value={newUser.password}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, password: e.target.value })
+                }
+              />
+            )}
+
+            <select
+              className={styles.input}
+              value={editUser ? editUser.role : newUser.role}
+              onChange={(e) =>
+                editUser
+                  ? setEditUser({ ...editUser, role: e.target.value })
+                  : setNewUser({ ...newUser, role: e.target.value })
+              }
+            >
+              <option>Student</option>
+              <option>Educator</option>
+              <option>Admin</option>
+            </select>
+
+            <button
+              className={styles.button}
+              onClick={async () => {
+                if (editUser) {
+                  await axios.put(
+                    `http://localhost:5000/users/${editUser.id}`,
+                    editUser
+                  );
+                } else {
+                  await axios.post(
+                    "http://localhost:5000/users",
+                    newUser
+                  );
+                }
+
+                fetchData();
+                setShowUserModal(false);
+                setEditUser(null);
+              }}
+            >
+              {editUser ? "Update" : "Create"}
+            </button>
+
+            <button
+              className={styles.closeBtn}
+              onClick={() => {
+                setShowUserModal(false);
+                setEditUser(null);
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ASSESSMENT MODAL (UNCHANGED) */}
+      {(showAssessmentModal || editAssessment) && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <AssessmentForm
+              initialData={editAssessment}
+              onSubmit={async (data: any) => {
+                try {
+                  if (editAssessment) {
+                    await axios.put(
+                      `http://localhost:5000/assessments/${editAssessment.id}`,
+                      data
+                    );
+                    setEditAssessment(null);
+                  } else {
+                    await axios.post(
+                      "http://localhost:5000/assessments",
+                      data
+                    );
+                    setShowAssessmentModal(false);
                   }
-                >
-                  <option>Student</option>
-                  <option>Educator</option>
-                  <option>Administrator</option>
-                </select>
-              </td>
+                  fetchData();
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+            />
 
-              <td>
-                <button
-                  className={styles.deleteBtn}
-                  onClick={() => deleteUser(user.email)}
-                >
-                  Delete
-                </button>
-              </td>
-              <td>
-                <button
-                  className={styles.updateBtn}
-                  onClick={() => updateuser(user.email)}
-                >
-                  Update
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <button
+              className={styles.closeBtn}
+              onClick={() => {
+                setShowAssessmentModal(false);
+                setEditAssessment(null);
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

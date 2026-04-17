@@ -1,0 +1,421 @@
+{
+  "users": [
+    {
+      "id": "3",
+      "fullName": "Student One",
+      "email": "student@test.com",
+      "password": "123456",
+      "role": "Student",
+      "status": "active",
+      "createdAt": "2026-04-03T10:00:00Z"
+    },
+    {
+      "id": "PFnMC3zk1AY",
+      "fullName": "ritika",
+      "email": "riti@gmail.com",
+      "password": "1234",
+      "role": "Administrator",
+      "status": "active",
+      "createdAt": "2026-04-10T14:53:42.404Z"
+    },
+    {
+      "id": "bhp1jeMm6Y8",
+      "fullName": "student",
+      "email": "student101@gmail.com",
+      "password": "1234",
+      "role": "Student",
+      "status": "active"
+    },
+    {
+      "id": "0zjd0dKl2Tc",
+      "fullName": "sandy",
+      "email": "sandy@gmail.com",
+      "password": "1234",
+      "role": "Educator",
+      "status": "active",
+      "createdAt": "2026-04-11T07:02:21.076Z"
+    },
+    {
+      "id": "PdZgYWhCVmY",
+      "fullName": "Gobika",
+      "email": "Gobika@gmail.com",
+      "password": "0909",
+      "role": "Student",
+      "status": "active",
+      "createdAt": "2026-04-11T08:34:00.236Z"
+    },
+    {
+      "id": "qLVDTvcolkM",
+      "fullName": "gobikaks",
+      "email": "gobikaks@gmail.com",
+      "password": "1234",
+      "role": "Educator",
+      "status": "active",
+      "createdAt": "2026-04-11T08:36:57.242Z"
+    },
+    {
+      "id": "aBaPUSq4TuY",
+      "fullName": "alice",
+      "email": "alice@gmail.com",
+      "password": "1234",
+      "role": "Administrator",
+      "status": "active",
+      "createdAt": "2026-04-11T08:47:35.114Z"
+    },
+    {
+      "id": "u8FGRisUmeQ",
+      "fullName": "rithu",
+      "email": "rithu@gmail.com",
+      "password": "1234",
+      "role": "Student",
+      "status": "active",
+      "createdAt": "2026-04-14T05:39:53.648Z"
+    },
+    {
+      "fullName": "Harina",
+      "email": "Harina0714@gmail.com",
+      "password": "Harina0705",
+      "role": "Educator",
+      "status": "active",
+      "createdAt": "2026-04-14T09:37:49.543Z",
+      "id": "bTWmigIp0Sc"
+    },
+    {
+      "fullName": "Harina",
+      "email": "harina0714@gmail.com",
+      "password": "Harina0705",
+      "role": "Educator",
+      "status": "active",
+      "createdAt": "2026-04-14T09:46:04.757Z",
+      "id": "RWEMIP5y9Vw"
+    },
+    {
+      "fullName": "ritika",
+      "email": "hari@gmail.com",
+      "password": "hari0705",
+      "role": "Student",
+      "status": "active",
+      "createdAt": "2026-04-14T09:48:00.288Z",
+      "id": "6nIIXMQMMZE"
+    }
+  ],
+  "roles_permissions": [
+    {
+      "id": "1",
+      "role": "Administrator",
+      "permissions": [
+        "manage_users",
+        "view_reports",
+        "manage_assessments"
+      ]
+    },
+    {
+      "id": "2",
+      "role": "Educator",
+      "permissions": [
+        "create_assessment",
+        "edit_assessment",
+        "view_results"
+      ]
+    },
+    {
+      "id": "3",
+      "role": "Student",
+      "permissions": [
+        "take_assessment",
+        "view_feedback"
+      ]
+    }
+  ],
+  "activity_logs": [
+    {
+      "id": "1",
+      "userId": "PFnMC3zk1AY",
+      "action": "Created new user",
+      "timestamp": "2026-04-05T10:00:00Z"
+    }
+  ],
+  "assessments": [
+    {
+      "id": "A1L18l_CYJ8",
+      "title": "Mathematics Basic",
+      "category": "Maths",
+      "instructions": "Answer all questions",
+      "timeLimit": 30,
+      "totalMarks": 5,
+      "educatorId": "0zjd0dKl2Tc",
+      "questions": [
+        {
+          "question": "2 + 2 = ?",
+          "type": "mcq",
+          "options": [
+            "4",
+            "5",
+            "6",
+            "7"
+          ],
+          "answer": "4",
+          "marks": 5
+        }
+      ]
+    },
+    {
+      "id": "imAIWIVdmYQ",
+      "title": "Web DevOps",
+      "category": "Programming",
+      "instructions": "Choose correct answer",
+      "timeLimit": 30,
+      "totalMarks": 10,
+      "educatorId": "PFnMC3zk1AY",
+      "questions": [
+        {
+          "question": "What is DevOps?",
+          "type": "mcq",
+          "options": [
+            "Development + Operations",
+            "Only Development",
+            "Only Testing",
+            "None"
+          ],
+          "answer": "Development + Operations",
+          "marks": 10
+        }
+      ]
+    },
+    {
+      "title": "science",
+      "category": "bio",
+      "instructions": "",
+      "timeLimit": 30,
+      "questions": [
+        {
+          "type": "mcq",
+          "question": "what is science",
+          "options": [
+            "hello",
+            "hii",
+            "vanalak",
+            "vanakam"
+          ],
+          "answer": "vanakam",
+          "marks": 10
+        }
+      ],
+      "educatorId": "0zjd0dKl2Tc",
+      "totalMarks": 10,
+      "id": "8I1zne0kuys"
+    },
+    {
+      "title": "Algebra",
+      "category": "maths",
+      "instructions": "",
+      "timeLimit": 25,
+      "questions": [
+        {
+          "type": "mcq",
+          "question": "2+2+5",
+          "options": [
+            "1",
+            "2",
+            "8",
+            "9"
+          ],
+          "correctAnswer": "9",
+          "marks": 1
+        }
+      ],
+      "educatorId": "RWEMIP5y9Vw",
+      "totalMarks": 1,
+      "id": "MekuuglbgRM"
+    },
+    {
+      "title": "geomentry",
+      "category": "math",
+      "instructions": "attend all questions",
+      "timeLimit": 3,
+      "questions": [
+        {
+          "type": "mcq",
+          "question": "2+2",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correctAnswer": "",
+          "marks": 5
+        },
+        {
+          "type": "mcq",
+          "question": "55",
+          "options": [
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "correctAnswer": "5",
+          "marks": 5
+        }
+      ],
+      "educatorId": "RWEMIP5y9Vw",
+      "totalMarks": 10,
+      "id": "qKLtl3dnDj0"
+    }
+  ],
+  "results": [
+    {
+      "id": "1",
+      "userId": "3",
+      "assessmentId": null,
+      "score": 80,
+      "completed": true,
+      "submittedAt": "2026-04-06T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "userId": "3",
+      "assessmentId": "A1L18l_CYJ8",
+      "score": 100,
+      "completed": true,
+      "submittedAt": "2026-04-06T11:00:00Z"
+    },
+    {
+      "userId": "u8FGRisUmeQ",
+      "assessmentId": "imAIWIVdmYQ",
+      "score": 10,
+      "completed": true,
+      "submittedAt": "2026-04-14T06:22:42.900Z",
+      "id": "tdgQYZWmShc"
+    },
+    {
+      "assessmentId": "8I1zne0kuys",
+      "studentId": "u8FGRisUmeQ",
+      "score": 0,
+      "id": "MOXwAem1zkU"
+    },
+    {
+      "assessmentId": "MekuuglbgRM",
+      "studentId": "6nIIXMQMMZE",
+      "score": 1,
+      "id": "eCU2CaWksR4"
+    },
+    {
+      "assessmentId": "qKLtl3dnDj0",
+      "studentId": "6nIIXMQMMZE",
+      "score": 0,
+      "id": "uZR55a_Hw0I"
+    },
+    {
+      "assessmentId": "8I1zne0kuys",
+      "studentId": "6nIIXMQMMZE",
+      "score": 0,
+      "id": "rlXzT328UYg"
+    }
+  ],
+  "assignments": [
+    {
+      "id": "1",
+      "studentId": "3",
+      "assessmentId": null
+    },
+    {
+      "id": "2",
+      "studentId": "3",
+      "assessmentId": "A1L18l_CYJ8"
+    },
+    {
+      "id": "3",
+      "studentId": "u8FGRisUmeQ",
+      "assessmentId": "imAIWIVdmYQ"
+    },
+    {
+      "assessmentId": "8I1zne0kuys",
+      "studentId": "3",
+      "id": "cPkR51E01kE"
+    },
+    {
+      "assessmentId": "8I1zne0kuys",
+      "studentId": "bhp1jeMm6Y8",
+      "id": "_gWDwIGuVgQ"
+    },
+    {
+      "assessmentId": "8I1zne0kuys",
+      "studentId": "PdZgYWhCVmY",
+      "id": "sbqJ8gfMhB8"
+    },
+    {
+      "assessmentId": "8I1zne0kuys",
+      "studentId": "u8FGRisUmeQ",
+      "id": "YpNYKkfAzL4"
+    },
+    {
+      "assessmentId": "MekuuglbgRM",
+      "studentId": "3",
+      "id": "p-SxkRh-Z5g"
+    },
+    {
+      "assessmentId": "MekuuglbgRM",
+      "studentId": "u8FGRisUmeQ",
+      "id": "c4-v7xP-WRI"
+    },
+    {
+      "assessmentId": "MekuuglbgRM",
+      "studentId": "6nIIXMQMMZE",
+      "id": "lZuJbHLcrPY"
+    },
+    {
+      "assessmentId": "MekuuglbgRM",
+      "studentId": "PdZgYWhCVmY",
+      "id": "Bo-q-u57Qbk"
+    },
+    {
+      "assessmentId": "MekuuglbgRM",
+      "studentId": "bhp1jeMm6Y8",
+      "id": "J9xDdRW3Vi0"
+    },
+    {
+      "assessmentId": "qKLtl3dnDj0",
+      "studentId": "3",
+      "id": "irhZNOzBOvM"
+    },
+    {
+      "assessmentId": "qKLtl3dnDj0",
+      "studentId": "bhp1jeMm6Y8",
+      "id": "55gnhdLqSzU"
+    },
+    {
+      "assessmentId": "qKLtl3dnDj0",
+      "studentId": "PdZgYWhCVmY",
+      "id": "bb4MReFSUUA"
+    },
+    {
+      "assessmentId": "qKLtl3dnDj0",
+      "studentId": "u8FGRisUmeQ",
+      "id": "F8xrRH3dY2c"
+    },
+    {
+      "assessmentId": "qKLtl3dnDj0",
+      "studentId": "6nIIXMQMMZE",
+      "id": "sO_mvCVFSrA"
+    },
+    {
+      "assessmentId": null,
+      "studentId": "3",
+      "id": "lp388F7mz0s"
+    }
+  ],
+  "reports": [
+    {
+      "id": "1",
+      "title": "User Statistics",
+      "totalUsers": 8,
+      "totalStudents": 4,
+      "totalEducators": 2,
+      "totalAdmins": 2,
+      "generatedAt": "2026-04-10T08:00:00Z"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

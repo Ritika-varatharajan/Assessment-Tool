@@ -3,6 +3,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 import styles from "./register.module.css";
 
 type UserRole = "Student" | "Educator" | "Administrator";
@@ -24,6 +25,9 @@ export default function RegisterPage() {
     role: "Student",
   });
 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ internal only
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -35,94 +39,107 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (formData.password.length < 6) {
-      alert("Password must be at least 6 characters");
-      return;
+    if (loading) return; // ✅ prevent double click
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const email = formData.email.trim();
+      const fullName = formData.fullName.trim();
+
+      // 🔍 Check existing user
+      const res = await axios.get(
+        `http://localhost:5000/users?email=${email}`
+      );
+
+      if (res.data.length > 0) {
+        setError("Email already registered");
+        setLoading(false); // ✅ fix
+        return;
+      }
+
+      // ➕ Create user
+      await axios.post("http://localhost:5000/users", {
+        ...formData,
+        fullName,
+        email,
+        status: "active",
+        createdAt: new Date().toISOString(),
+      });
+
+      alert("Registration successful!");
+      router.push("/login");
+    } catch (err: any) {
+      console.error("SIGNUP ERROR:", err);
+
+      if (err.code === "ERR_NETWORK") {
+        setError("⚠️ Server not running (start JSON Server)");
+      } else {
+        setError(err.response?.data?.message || "Something went wrong");
+      }
     }
 
-    // Save to localStorage (demo only)
-    localStorage.setItem("user", JSON.stringify(formData));
-
-    console.log("Registered User:", formData);
-
-    router.push("/login");
+    setLoading(false); // ✅ always reset
   };
 
   return (
     <div className={styles.signupContainer}>
       <div className={styles.signupCard}>
-        <header className={styles.formHeader}>
-          <h2>Create Account</h2>
-          <p>Join the Assessment Tool platform</p>
-        </header>
+        <h2>Create Account</h2>
 
-        <form onSubmit={handleSubmit} className={styles.signupForm}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="fullName">Full Name</label>
-            <input
-              id="fullName"
-              type="text"
-              name="fullName"
-              placeholder="Enter your name"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Full Name"
+            value={formData.fullName}
+            onChange={handleChange}
+            required
+          />
 
-          <div className={styles.inputGroup}>
-            <label htmlFor="email">Email Address</label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              placeholder="name@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
-          <div className={styles.inputGroup}>
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
 
-          <div className={styles.inputGroup}>
-            <label htmlFor="role">User Role</label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-            >
-              <option value="Student">Student / Participant</option>
-              <option value="Educator">Educator / Instructor</option>
-              <option value="Administrator">Administrator</option>
-            </select>
-          </div>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+          >
+            <option value="Student">Student</option>
+            <option value="Educator">Educator</option>
+            <option value="Administrator">Administrator</option>
+          </select>
 
-          <button type="submit" className={styles.signupButton}>
+          {error && <p className={styles.error}>{error}</p>}
+
+          {/* ✅ Disabled silently (no loading text) */}
+          <button type="submit" disabled={loading}>
             Sign Up
           </button>
         </form>
 
-        <footer className={styles.formFooter}>
-          <p>
-            Already have an account? <Link href="/login">Login</Link>
-          </p>
-        </footer>
+        <p>
+          Already have an account? <Link href="/login">Login</Link>
+        </p>
       </div>
     </div>
   );

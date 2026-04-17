@@ -1,108 +1,113 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import Link from "next/link";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
   const router = useRouter();
 
+  const [mounted, setMounted] = useState(false); 
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "Student", 
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFormData({
-      ...formData,
+
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+   
 
-    setTimeout(() => {
-      const { role } = formData;
+    try {
+      const email = formData.email.trim().toLowerCase();
+      const password = formData.password.trim();
 
-      console.log("ROLE:", role); 
+      const res = await axios.get(
+        `http://localhost:5000/users?email=${email}`
+      );
 
-      localStorage.setItem("user", JSON.stringify(formData));
+      const user = res.data?.[0];
 
-      if (role === "Administrator") {
-        router.push("/admin"); 
-      } else if (role === "Educator") {
-        router.push("/educator");
+      if (user && user.password === password) {
+        localStorage.setItem("user", JSON.stringify(user));
+
+        switch (user.role) {
+          case "Administrator":
+            router.push("/admin");
+            break;
+          case "Educator":
+            router.push("/educator");
+            break;
+          default:
+            router.push("/student");
+        }
       } else {
-        router.push("/student");
+        alert("❌ Invalid email or password");
       }
 
-      setIsSubmitting(false);
-    }, 1000);
+    } catch (err: any) {
+      console.error("LOGIN ERROR:", err);
+
+      if (err.code === "ERR_NETWORK") {
+        alert("⚠️ Backend not running");
+      } else {
+        alert("⚠️ Something went wrong");
+      }
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
     <main className={styles.container}>
       <div className={styles.authCard}>
-        <div className={styles.brand}>
-          <h1>
-            Assessment <span>Tool</span>
-          </h1>
-          <p>Login</p>
-        </div>
+        <h2>Login</h2>
 
-        <form onSubmit={handleLogin} className={styles.form}>
-          <div className={styles.field}>
-            <label>Email Address</label>
-            <input
-              name="email"
-              type="email"
-              placeholder="e.g. alice@gmail.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <form onSubmit={handleLogin}>
+          <input
+            name="email"
+            type="email"
+            placeholder="Enter email"
+            value={formData.email || ""}
+            onChange={handleChange}
+            required
+          />
 
-          <div className={styles.field}>
-            <label>Password</label>
-            <input
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            name="password"
+            type="password"
+            placeholder="Enter password"
+            value={formData.password || ""}
+            onChange={handleChange}
+            required
+          />
 
-          <div className={styles.field}>
-            <label>Sign in as</label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-            >
-              <option value="Student">Student / Candidate</option>
-              <option value="Educator">Educator / Instructor</option>
-              <option value="Administrator">Administrator</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className={styles.submitBtn}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Authenticating..." : "Sign In"}
+          <button type="submit">Login
+           
           </button>
         </form>
+
+        <p>
+          New User? <Link href="/register">Signup</Link>
+        </p>
       </div>
     </main>
   );

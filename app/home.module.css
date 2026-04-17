@@ -5,12 +5,13 @@
   background: linear-gradient(135deg, #eef2ff, #f8fafc);
 }
 
+/* ================= HEADER ================= */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  background:#612D53;
+  background: #612D53;
   color: white;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
@@ -29,56 +30,134 @@
   text-decoration: none;
   color: white;
   font-weight: 500;
+  transition: 0.3s;
 }
 
+.nav a:hover {
+  opacity: 0.8;
+}
+
+/* ================= BUTTONS ================= */
 .btnPrimary {
   background: #6366f1;
   color: white !important;
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 8px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btnPrimary:hover {
+  background: #4f46e5;
 }
 
 .btnSecondary {
   background: #10b981;
   color: white !important;
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 8px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btnSecondary:hover {
+  background: #059669;
 }
 
 .btnOutline {
   border: 2px solid #6366f1;
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 8px;
   color: #6366f1;
+  font-weight: 600;
+  transition: 0.3s;
 }
 
+.btnOutline:hover {
+  background: #6366f1;
+  color: white;
+}
+
+/* ================= HERO ================= */
 .hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 60px 40px;
+
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  border-radius: 20px;
+  margin: 20px;
 }
 
 .heroContent {
   max-width: 500px;
 }
 
-.heroImage {
-  width: 400px;
+.heroContent h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1f2937;
 }
 
+.heroContent p {
+  margin-top: 10px;
+  color: #4b5563;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Highlight text */
+.highlight {
+  color: #6366f1;
+}
+
+/* Image styling */
+.heroImage {
+  width: 380px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: 0.3s;
+}
+
+.heroImage:hover {
+  transform: scale(1.05);
+}
+
+/* Buttons container */
 .heroButtons {
   margin-top: 20px;
   display: flex;
   gap: 10px;
 }
 
+/* Feature badges */
+.badges {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.badges span {
+  background: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* ================= SECTION ================= */
 .section {
   padding: 60px 40px;
   text-align: center;
-  border: #612D53;
 }
 
+.section h2 {
+  margin-bottom: 20px;
+}
+
+/* ================= GRID ================= */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -86,18 +165,29 @@
   margin-top: 20px;
 }
 
+/* ================= CARD ================= */
 .card {
   background: white;
   padding: 20px;
   border-radius: 12px;
-  border:2px #612D53 solid;
+  border: 2px #612D53 solid;
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
- transition: all transform 0.2s ease;}
+  transition: transform 0.2s ease;
+
+  max-width: 600px;
+  margin: 20px auto;
+}
 
 .card:hover {
   transform: translateY(-5px);
 }
 
+.card p {
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* ================= FOOTER ================= */
 .footer {
   text-align: center;
   padding: 20px;
