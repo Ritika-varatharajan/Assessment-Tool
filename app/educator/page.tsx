@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./educator.module.css";
 import AssessmentForm from "../components/AssessmentForm";
+const API = "https://assessment-tool-1-2e4i.onrender.com";
 type FormData = {
   title: string;
   questions: any[];
@@ -39,32 +40,40 @@ export default function EducatorDashboard() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const [a, r, u, asg] = await Promise.all([
-        axios.get("http://localhost:5000/assessments"),
-        axios.get("http://localhost:5000/results"),
-        axios.get("http://localhost:5000/users"),
-        axios.get("http://localhost:5000/assignments"),
-      ]);
+  
+    const fetchData = async () => {
+  try {
+    await axios.get(`${API}`); // wake up server
 
-      setAssessments(a.data);
-      setResults(r.data);
-      setAssignments(asg.data);
+    const [a, r, u, asg] = await Promise.all([
+      axios.get(`${API}/assessments`),
+      axios.get(`${API}/results`),
+      axios.get(`${API}/users`),
+      axios.get(`${API}/assignments`),
+    ]);
 
-      const studentUsers = u.data.filter(
-        (user: any) => user.role === "Student"
-      );
-      setStudents(studentUsers);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    setAssessments(a.data);
+    setResults(r.data);
+    setAssignments(asg.data);
+
+    const studentUsers = u.data.filter(
+      (user: any) => user.role === "Student"
+    );
+    setStudents(studentUsers);
+  } 
+  
+  catch (err: any) {
+  console.error(err);
+  alert("Something went wrong. Check Render server.");
+}
+};
 
   const deleteAssessment = async (id: string) => {
     if (!confirm("Delete assessment?")) return;
-    await axios.delete(`http://localhost:5000/assessments/${id}`);
-    fetchData();
+   
+    await axios.delete(`${API}/assessments/${id}`);
+fetchData();
+    
   };
 
   // ✅ ASSIGN FUNCTION (UNCHANGED LOGIC)
@@ -75,8 +84,8 @@ export default function EducatorDashboard() {
     }
 
     try {
-      const existing = await axios.get("http://localhost:5000/assignments");
-
+      const existing = await  axios.get(`${API}/assignments`);
+     
       const newAssignments = assignData.studentIds.filter(
         (studentId) =>
           !existing.data.some(
@@ -85,15 +94,17 @@ export default function EducatorDashboard() {
               a.assessmentId === assignData.assessmentId
           )
       );
-
-      await Promise.all(
-        newAssignments.map((studentId) =>
-          axios.post("http://localhost:5000/assignments", {
-            assessmentId: assignData.assessmentId,
-            studentId,
-          })
-        )
-      );
+await Promise.all(
+  newAssignments.map((studentId) =>
+    axios.post(`${API}/assignments`, {
+      assessmentId: assignData.assessmentId,
+      studentId,
+    })
+  )
+);
+      
+       
+    
 
       alert("Assigned successfully ✅");
 
@@ -373,16 +384,18 @@ export default function EducatorDashboard() {
     };
 
     if (editAssessment) {
+      
       await axios.put(
-        `http://localhost:5000/assessments/${editAssessment.id}`,
-        payload
-      );
+  `${API}/assessments/${editAssessment.id}`,
+  payload
+);
       setEditAssessment(null);
     } else {
+      
       await axios.post(
-        "http://localhost:5000/assessments",
-        payload
-      );
+  `${API}/assessments`,
+  payload
+);
       setShowModal(false);
     }
 

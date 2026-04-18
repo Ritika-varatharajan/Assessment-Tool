@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import styles from "./login.module.css";
+const API = "https://assessment-tool-1-2e4i.onrender.com";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,49 +33,49 @@ export default function LoginPage() {
     }));
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-   
+ const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    try {
-      const email = formData.email.trim().toLowerCase();
-      const password = formData.password.trim();
+  try {
+    const email = formData.email.trim().toLowerCase();
+    const password = formData.password.trim();
 
-      const res = await axios.get(
-        `http://localhost:5000/users?email=${email}`
-      );
+    // ✅ FIRST: API CALL
+    const res = await axios.get(
+      `${API}/users?email=${email}`
+    );
 
-      const user = res.data?.[0];
+    // ✅ THEN: GET USER
+    const user = res.data?.[0];
 
-      if (user && user.password === password) {
-        localStorage.setItem("user", JSON.stringify(user));
+    // ✅ THEN: CHECK PASSWORD
+    if (user && user.password === password) {
+      localStorage.setItem("user", JSON.stringify(user));
 
-        switch (user.role) {
-          case "Administrator":
-            router.push("/admin");
-            break;
-          case "Educator":
-            router.push("/educator");
-            break;
-          default:
-            router.push("/student");
-        }
-      } else {
-        alert("❌ Invalid email or password");
+      switch (user.role) {
+        case "Administrator":
+          router.push("/admin");
+          break;
+        case "Educator":
+          router.push("/educator");
+          break;
+        default:
+          router.push("/student");
       }
-
-    } catch (err: any) {
-      console.error("LOGIN ERROR:", err);
-
-      if (err.code === "ERR_NETWORK") {
-        alert("⚠️ Backend not running");
-      } else {
-        alert("⚠️ Something went wrong");
-      }
+    } else {
+      alert("❌ Invalid email or password");
     }
 
-    
-  };
+  } catch (err: any) {
+    console.error("LOGIN ERROR:", err);
+
+    if (err.code === "ERR_NETWORK") {
+      alert("⚠️ Unable to connect server");
+    } else {
+      alert("⚠️ Something went wrong");
+    }
+  }
+};
 
   return (
     <main className={styles.container}>

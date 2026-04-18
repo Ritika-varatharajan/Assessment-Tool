@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import styles from "./register.module.css";
+const API = "https://assessment-tool-1-2e4i.onrender.com";
 
 type UserRole = "Student" | "Educator" | "Administrator";
 
@@ -53,8 +54,8 @@ export default function RegisterPage() {
 
       // 🔍 Check existing user
       const res = await axios.get(
-        `http://localhost:5000/users?email=${email}`
-      );
+  `${API}/users?email=${email}`
+);
 
       if (res.data.length > 0) {
         setError("Email already registered");
@@ -63,7 +64,8 @@ export default function RegisterPage() {
       }
 
       // ➕ Create user
-      await axios.post("http://localhost:5000/users", {
+     
+        await axios.post(`${API}/users`, {
         ...formData,
         fullName,
         email,

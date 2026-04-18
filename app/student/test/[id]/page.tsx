@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import styles from "./test.module.css";
+const API = "https://assessment-tool-1-2e4i.onrender.com";
 
 export default function TestPage() {
   const { id } = useParams();
@@ -55,14 +56,16 @@ export default function TestPage() {
   }, [timeLeft]);
 
   const fetchAssessment = async () => {
+    
     const res = await axios.get(
-      `http://localhost:5000/assessments/${id}`
-    );
+  `${API}/assessments/${id}`
+);
     setAssessment(res.data);
   };
+  
 
   const checkIfAlreadySubmitted = async () => {
-    const res = await axios.get("http://localhost:5000/results");
+    const res = await axios.get(`${API}/results`);
 
     const already = res.data.find(
       (r: any) =>
@@ -105,11 +108,12 @@ export default function TestPage() {
     });
 
     try {
-      await axios.post("http://localhost:5000/results", {
-        assessmentId: String(id),
-        studentId: String(student.id),
-        score: totalScore,
-      });
+      
+      await axios.post(`${API}/results`, {
+  assessmentId: String(id),
+  studentId: String(student.id),
+  score: totalScore,
+});
 
       setScore(totalScore);
       setShowResult(true);

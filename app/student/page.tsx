@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import styles from "./student.module.css";
+const API = "https://assessment-tool-1-2e4i.onrender.com";
 
 export default function StudentDashboard() {
   const [assessments, setAssessments] = useState<any[]>([]);
@@ -30,9 +31,10 @@ export default function StudentDashboard() {
   const fetchData = async () => {
     try {
       const [a, asg, r] = await Promise.all([
-        axios.get("http://localhost:5000/assessments"),
-        axios.get("http://localhost:5000/assignments"),
-        axios.get("http://localhost:5000/results"),
+       
+        axios.get(`${API}/assessments`),
+axios.get(`${API}/assignments`),
+axios.get(`${API}/results`),
       ]);
 
       setAssessments(a.data || []);
