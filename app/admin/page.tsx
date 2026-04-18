@@ -34,9 +34,9 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     try {
       const [u, a, r] = await Promise.all([
-        axios.get("http://localhost:5000/users"),
-        axios.get("http://localhost:5000/assessments"),
-        axios.get("http://localhost:5000/results"),
+        axios.get("http://localhost:10000/users"),
+        axios.get("http://localhost:10000/assessments"),
+        axios.get("http://localhost:10000/results"),
       ]);
 
       setUsers(u.data);
@@ -55,13 +55,13 @@ export default function AdminDashboard() {
 
   const deleteUser = async (id: string) => {
     if (!confirm("Delete user?")) return;
-    await axios.delete(`http://localhost:5000/users/${id}`);
+    await axios.delete(`http://localhost:10000/users/${id}`);
     fetchData();
   };
 
   const deleteAssessment = async (id: string) => {
     if (!confirm("Delete assessment?")) return;
-    await axios.delete(`http://localhost:5000/assessments/${id}`);
+    await axios.delete(`http://localhost:10000/assessments/${id}`);
     fetchData();
   };
 
@@ -366,12 +366,12 @@ export default function AdminDashboard() {
               onClick={async () => {
                 if (editUser) {
                   await axios.put(
-                    `http://localhost:5000/users/${editUser.id}`,
+                    `http://localhost:10000/users/${editUser.id}`,
                     editUser
                   );
                 } else {
                   await axios.post(
-                    "http://localhost:5000/users",
+                    "http://localhost:10000/users",
                     newUser
                   );
                 }
@@ -407,13 +407,13 @@ export default function AdminDashboard() {
                 try {
                   if (editAssessment) {
                     await axios.put(
-                      `http://localhost:5000/assessments/${editAssessment.id}`,
+                      `http://localhost:10000/assessments/${editAssessment.id}`,
                       data
                     );
                     setEditAssessment(null);
                   } else {
                     await axios.post(
-                      "http://localhost:5000/assessments",
+                      "http://localhost:10000/assessments",
                       data
                     );
                     setShowAssessmentModal(false);
