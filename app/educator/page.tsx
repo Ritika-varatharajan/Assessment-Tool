@@ -339,33 +339,37 @@ await Promise.all(
           </div>
         )}
 
-        {/* RESULTS */}
-        {activeTab === "results" && (
-          <div className={styles.resultList}>
-            {myResults.map((r) => {
-              const assessment = myAssessments.find(
-                (a) => a.id === r.assessmentId
-              );
+  {activeTab === "results" && (
+  <div className={styles.resultList}>
+    {myAssignments.map((asg) => {
+      const assessment = myAssessments.find(
+        (a) => String(a.id) === String(asg.assessmentId)
+      );
 
-              const student =
-                students.find((s) => s.id === r.userId) ||
-                students.find((s) => s.id === r.studentId);
+      const student = students.find(
+        (s) => String(s.id) === String(asg.studentId)
+      );
 
-              return (
-                <div key={r.id} className={styles.resultCard}>
-                  <h3>{assessment?.title}</h3>
-                  <p>Student: {student?.fullName || "Unknown"}</p>
-                  <p>Score: {r.score}</p>
-                  <p>
-                    Status:{" "}
-                    {r.score !== undefined ? "Completed ✅" : "Pending ⏳"}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      const result = myResults.find((r) => {
+        const sid = r.userId || r.studentId;
+        return (
+          String(r.assessmentId) === String(asg.assessmentId) &&
+          String(sid) === String(asg.studentId)
+        );
+      });
+
+      return (
+        <div key={asg.id} className={styles.resultCard}>
+          <h3>{assessment?.title || "Assessment"}</h3>
+          <p>Student: {student?.fullName || "Unknown"}</p>
+          <p>Status: {result ? "Completed ✅" : "Pending ⏳"}</p>
+          <p>Score: {result ? result.score : "Not Attempted"}</p>
+        </div>
+      );
+    })}
+  </div>
+)}
+</div>
 
       {/* MODAL */}
       {(showModal || editAssessment) && (
