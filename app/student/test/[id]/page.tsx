@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import styles from "./test.module.css";
+
 const API = "https://assessment-tool-1-2e4i.onrender.com";
 
 export default function TestPage() {
@@ -14,7 +15,6 @@ export default function TestPage() {
   const [answers, setAnswers] = useState<any>({});
   const [submitted, setSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(0);
-
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
 
@@ -40,67 +40,83 @@ export default function TestPage() {
   }, [assessment]);
 
   useEffect(() => {
-    if (timeLeft <= 0 || submitted) return;
+    if (!assessment || submitted) return;
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleSubmit(true);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, submitted]);
-
-  useEffect(() => {
-    if (timeLeft <= 0 && assessment && !submitted) {
-      handleSubmit(true);
-    }
-  }, [timeLeft]);
+  }, [assessment, submitted]);
 
   const fetchAssessment = async () => {
-    
-    const res = await axios.get(
-  `${API}/assessments/${id}`
-);
-    setAssessment(res.data);
+    try {
+      const res = await axios.get(`${API}/assessments/${id}`);
+
+      // ✅ FIX: normalize old data
+      const fixedQuestions = (res.data.questions || []).map((q: any) => ({
+        ...q,
+        correctAnswer: q.correctAnswer || q.answer || "",
+        options:
+          q.type === "mcq"
+            ? q.options || []
+            : q.type === "truefalse"
+            ? ["True", "False"]
+            : [],
+      }));
+
+      setAssessment({ ...res.data, questions: fixedQuestions });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load test");
+    }
   };
-  
 
   const checkIfAlreadySubmitted = async () => {
-    const res = await axios.get(`${API}/results`);
+    try {
+      const res = await axios.get(`${API}/results`);
 
-    const already = res.data.find(
-      (r: any) =>
-        String(r.assessmentId) === String(id) &&
-        (String(r.userId) === String(student.id) ||
-          String(r.studentId) === String(student.id))
-    );
+      const already = res.data.find(
+        (r: any) =>
+          String(r.assessmentId) === String(id) &&
+          String(r.studentId) === String(student?.id)
+      );
 
-    if (already) {
-      router.push("/student");
+      if (already) router.push("/student");
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const handleChange = (qIndex: number, value: string) => {
-    setAnswers({
-      ...answers,
+    setAnswers((prev: any) => ({
+      ...prev,
       [qIndex]: value,
-    });
+    }));
   };
 
   const handleSubmit = async (auto = false) => {
     if (!assessment || submitted) return;
+
+    if (!auto && Object.keys(answers).length === 0) {
+      alert("Please answer at least one question");
+      return;
+    }
 
     setSubmitted(true);
 
     let totalScore = 0;
 
     assessment.questions.forEach((q: any, index: number) => {
-      const userAns = String(answers[index] || "")
-        .trim()
-        .toLowerCase();
-
-      const correctAns = String(q.correctAnswer || "")
-        .trim()
-        .toLowerCase();
+      const userAns = String(answers[index] || "").trim().toLowerCase();
+      const correctAns = String(q.correctAnswer || "").trim().toLowerCase();
 
       if (userAns === correctAns) {
         totalScore += q.marks || 1;
@@ -108,12 +124,14 @@ export default function TestPage() {
     });
 
     try {
-      
       await axios.post(`${API}/results`, {
-  assessmentId: String(id),
-  studentId: String(student.id),
-  score: totalScore,
-});
+        assessmentId: String(id),
+        studentId: String(student?.id),
+        educatorId: assessment.educatorId, // ✅ FIX: send to correct educator
+        score: totalScore,
+        completed: true,
+        submittedAt: new Date().toISOString(),
+      });
 
       setScore(totalScore);
       setShowResult(true);
@@ -123,6 +141,7 @@ export default function TestPage() {
       }, 5000);
     } catch (err) {
       console.error(err);
+      alert("Submission failed");
       setSubmitted(false);
     }
   };
@@ -153,20 +172,57 @@ export default function TestPage() {
                 {index + 1}. {q.question}
               </p>
 
-              <div className={styles.options}>
-                {q.options?.map((opt: string, i: number) => (
+              {/* ✅ MCQ */}
+              {q.type === "mcq" &&
+                q.options?.map((opt: string, i: number) => (
                   <label key={i} className={styles.option}>
                     <input
                       type="radio"
                       name={`q-${index}`}
-                      value={opt}
                       checked={answers[index] === opt}
                       onChange={() => handleChange(index, opt)}
                     />
                     {opt}
                   </label>
                 ))}
-              </div>
+
+              {/* ✅ TRUE/FALSE FIXED */}
+              {q.type === "truefalse" &&
+                ["True", "False"].map((opt) => (
+                  <label key={opt} className={styles.option}>
+                    <input
+                      type="radio"
+                      name={`q-${index}`}
+                      checked={answers[index] === opt}
+                      onChange={() => handleChange(index, opt)}
+                    />
+                    {opt}
+                  </label>
+                ))}
+
+              {/* ✅ SHORT */}
+              {q.type === "short" && (
+                <input
+                  className={styles.input}
+                  placeholder="Your answer"
+                  value={answers[index] || ""}
+                  onChange={(e) =>
+                    handleChange(index, e.target.value)
+                  }
+                />
+              )}
+
+              {/* ✅ ESSAY */}
+              {q.type === "essay" && (
+                <textarea
+                  className={styles.textarea}
+                  placeholder="Write your answer"
+                  value={answers[index] || ""}
+                  onChange={(e) =>
+                    handleChange(index, e.target.value)
+                  }
+                />
+              )}
             </div>
           ))}
         </div>

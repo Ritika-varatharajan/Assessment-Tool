@@ -154,7 +154,7 @@
             "6",
             "7"
           ],
-          "answer": "4",
+          "correctAnswer": "4",
           "marks": 5
         }
       ]
@@ -177,7 +177,7 @@
             "Only Testing",
             "None"
           ],
-          "answer": "Development + Operations",
+          "correctAnswer": "Development + Operations",
           "marks": 10
         }
       ]
@@ -197,7 +197,7 @@
             "vanalak",
             "vanakam"
           ],
-          "answer": "vanakam",
+          "correctAnswer": "vanakam",
           "marks": 10
         }
       ],

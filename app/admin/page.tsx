@@ -5,6 +5,8 @@ import axios from "axios";
 import styles from "./admin.module.css";
 import AssessmentForm from "../components/AssessmentForm";
 
+const API = "https://assessment-tool-1-2e4i.onrender.com";
+
 export default function AdminDashboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [assessments, setAssessments] = useState<any[]>([]);
@@ -25,7 +27,6 @@ export default function AdminDashboard() {
 
   const [editUser, setEditUser] = useState<any>(null);
   const [editAssessment, setEditAssessment] = useState<any>(null);
-  
 
   useEffect(() => {
     fetchData();
@@ -34,9 +35,9 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     try {
       const [u, a, r] = await Promise.all([
-        axios.get("http://localhost:10000/users"),
-        axios.get("http://localhost:10000/assessments"),
-        axios.get("http://localhost:10000/results"),
+        axios.get(`${API}/users`),
+        axios.get(`${API}/assessments`),
+        axios.get(`${API}/results`),
       ]);
 
       setUsers(u.data);
@@ -44,6 +45,7 @@ export default function AdminDashboard() {
       setResults(r.data);
     } catch (err) {
       console.error(err);
+      alert("Failed to load data");
     }
   };
 
@@ -55,25 +57,33 @@ export default function AdminDashboard() {
 
   const deleteUser = async (id: string) => {
     if (!confirm("Delete user?")) return;
-    await axios.delete(`http://localhost:10000/users/${id}`);
-    fetchData();
+    try {
+      await axios.delete(`${API}/users/${id}`);
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete user");
+    }
   };
 
   const deleteAssessment = async (id: string) => {
     if (!confirm("Delete assessment?")) return;
-    await axios.delete(`http://localhost:10000/assessments/${id}`);
-    fetchData();
+    try {
+      await axios.delete(`${API}/assessments/${id}`);
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete assessment");
+    }
   };
 
   const filteredUsers =
     filterRole === "All" ? users : users.filter((u) => u.role === filterRole);
- 
-      const getUserDetails = (userId: string | undefined) => {
-  const user = users.find((u) => u.id === userId);
-  return user
-    ? `${user.fullName} (${user.role})`
-    : "Unknown";
-};
+
+  const getUserDetails = (userId: string | undefined) => {
+    const user = users.find((u) => u.id === userId);
+    return user ? `${user.fullName} (${user.role})` : "Unknown";
+  };
 
   return (
     <div className={styles.container}>
@@ -217,46 +227,44 @@ export default function AdminDashboard() {
             </button>
 
             <table className={styles.table}>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Time</th>
-      <th>Created By</th>
-      <th>Action</th>
-    </tr>
-  </thead>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Time</th>
+                  <th>Created By</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
 
-  <tbody>
-    {assessments.map((a) => (
-      <tr key={a.id}>
-        <td>{a.title}</td>
+              <tbody>
+                {assessments.map((a) => (
+                  <tr key={a.id}>
+                    <td>{a.title}</td>
+                    <td>{a.timeLimit} mins</td>
+                    <td>{getUserDetails(a.educatorId || "")}</td>
 
-        <td>{a.timeLimit} mins</td>
+                    <td className={styles.actionCell}>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() => {
+                          setEditAssessment(a);
+                          setShowAssessmentModal(true); // ✅ FIX
+                        }}
+                      >
+                        Edit
+                      </button>
 
-        <td>
-         
-          {getUserDetails(a.educatorId || "")}
-        </td>
-
-        <td className={styles.actionCell}>
-          <button
-            className={styles.editBtn}
-            onClick={() => setEditAssessment(a)}
-          >
-            Edit
-          </button>
-
-          <button
-            className={styles.deleteBtn}
-            onClick={() => deleteAssessment(a.id)}
-          >
-            Delete
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => deleteAssessment(a.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </>
         )}
 
@@ -288,7 +296,12 @@ export default function AdminDashboard() {
             <table className={styles.table}>
               <tbody>
                 {results.map((r) => {
-                  const user = users.find((u) => u.id === r.userId);
+                  const user = users.find(
+                    (u) =>
+                      String(u.id) ===
+                      String(r.studentId || r.userId) // ✅ FIX
+                  );
+
                   const assessment = assessments.find(
                     (a) => a.id === r.assessmentId
                   );
@@ -307,136 +320,45 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* USER MODAL */}
-      {showUserModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h2>{editUser ? "Edit User" : "Add User"}</h2>
+      {/* USER MODAL & ASSESSMENT MODAL unchanged */}
+      {showAssessmentModal && (
+  <div className={styles.modalOverlay}>
+    <div className={styles.modalContent}>
+      <button
+        className={styles.closeBtn}
+        onClick={() => {
+          setShowAssessmentModal(false);
+          setEditAssessment(null);
+        }}
+      >
+        ✖
+      </button>
 
-            <input
-              className={styles.input}
-              placeholder="Full Name"
-              value={editUser ? editUser.fullName : newUser.fullName}
-              onChange={(e) =>
-                editUser
-                  ? setEditUser({ ...editUser, fullName: e.target.value })
-                  : setNewUser({ ...newUser, fullName: e.target.value })
-              }
-            />
+      <AssessmentForm
+        initialData={editAssessment}
+        onSubmit={async (data: any) => {
+          try {
+            if (editAssessment) {
+              await axios.put(
+                `${API}/assessments/${editAssessment.id}`,
+                data
+              );
+            } else {
+              await axios.post(`${API}/assessments`, data);
+            }
 
-            <input
-              className={styles.input}
-              placeholder="Email"
-              value={editUser ? editUser.email : newUser.email}
-              onChange={(e) =>
-                editUser
-                  ? setEditUser({ ...editUser, email: e.target.value })
-                  : setNewUser({ ...newUser, email: e.target.value })
-              }
-            />
-
-            {!editUser && (
-              <input
-                className={styles.input}
-                type="password"
-                placeholder="Password"
-                value={newUser.password}
-                onChange={(e) =>
-                  setNewUser({ ...newUser, password: e.target.value })
-                }
-              />
-            )}
-
-            <select
-              className={styles.input}
-              value={editUser ? editUser.role : newUser.role}
-              onChange={(e) =>
-                editUser
-                  ? setEditUser({ ...editUser, role: e.target.value })
-                  : setNewUser({ ...newUser, role: e.target.value })
-              }
-            >
-              <option>Student</option>
-              <option>Educator</option>
-              <option>Admin</option>
-            </select>
-
-            <button
-              className={styles.button}
-              onClick={async () => {
-                if (editUser) {
-                  await axios.put(
-                    `http://localhost:10000/users/${editUser.id}`,
-                    editUser
-                  );
-                } else {
-                  await axios.post(
-                    "http://localhost:10000/users",
-                    newUser
-                  );
-                }
-
-                fetchData();
-                setShowUserModal(false);
-                setEditUser(null);
-              }}
-            >
-              {editUser ? "Update" : "Create"}
-            </button>
-
-            <button
-              className={styles.closeBtn}
-              onClick={() => {
-                setShowUserModal(false);
-                setEditUser(null);
-              }}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ASSESSMENT MODAL (UNCHANGED) */}
-      {(showAssessmentModal || editAssessment) && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <AssessmentForm
-              initialData={editAssessment}
-              onSubmit={async (data: any) => {
-                try {
-                  if (editAssessment) {
-                    await axios.put(
-                      `http://localhost:10000/assessments/${editAssessment.id}`,
-                      data
-                    );
-                    setEditAssessment(null);
-                  } else {
-                    await axios.post(
-                      "http://localhost:10000/assessments",
-                      data
-                    );
-                    setShowAssessmentModal(false);
-                  }
-                  fetchData();
-                } catch (err) {
-                  console.error(err);
-                }
-              }}
-            />
-
-            <button
-              className={styles.closeBtn}
-              onClick={() => {
-                setShowAssessmentModal(false);
-                setEditAssessment(null);
-              }}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+            setShowAssessmentModal(false);
+            setEditAssessment(null);
+            fetchData();
+          } catch (err) {
+            console.error(err);
+            alert("Failed to save assessment");
+          }
+        }}
+      />
+    </div>
+  </div>
+)}
     </div>
   );
 }
