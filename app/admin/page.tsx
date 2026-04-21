@@ -192,10 +192,12 @@ export default function AdminDashboard() {
                     <td className={styles.actionCell}>
                       <button
                         className={styles.editBtn}
+                       
                         onClick={() => {
-                          setEditUser(u);
-                          setShowUserModal(true);
-                        }}
+  setEditUser(u);
+  setNewUser(u);
+  setShowUserModal(true);
+}}
                       >
                         Edit
                       </button>
@@ -221,7 +223,10 @@ export default function AdminDashboard() {
 
             <button
               className={styles.button}
-              onClick={() => setShowAssessmentModal(true)}
+              
+              onClick={() => {
+                 setEditAssessment(null);
+                 setShowAssessmentModal(true)}}
             >
               + Create Assessment
             </button>
@@ -248,8 +253,9 @@ export default function AdminDashboard() {
                         className={styles.editBtn}
                         onClick={() => {
                           setEditAssessment(a);
-                          setShowAssessmentModal(true); // ✅ FIX
+                          setShowAssessmentModal(true); 
                         }}
+                        
                       >
                         Edit
                       </button>
@@ -321,21 +327,28 @@ export default function AdminDashboard() {
       </div>
 
       {/* USER MODAL & ASSESSMENT MODAL unchanged */}
-      {showAssessmentModal && (
-  <div className={styles.modalOverlay}>
+     {showAssessmentModal && (
+  <div className={styles.modalOverlay} key="assessment-modal">
     <div className={styles.modalContent}>
+      
       <button
         className={styles.closeBtn}
         onClick={() => {
           setShowAssessmentModal(false);
-          setEditAssessment(null);
+
+          // ✅ Delay clearing to avoid React crash
+          setTimeout(() => {
+            setEditAssessment(null);
+          }, 0);
         }}
       >
         ✖
       </button>
 
       <AssessmentForm
+        key={editAssessment?.id || "new"}   // ✅ VERY IMPORTANT
         initialData={editAssessment}
+        
         onSubmit={async (data: any) => {
           try {
             if (editAssessment) {
@@ -348,7 +361,12 @@ export default function AdminDashboard() {
             }
 
             setShowAssessmentModal(false);
-            setEditAssessment(null);
+
+            // ✅ delay here also
+            setTimeout(() => {
+              setEditAssessment(null);
+            }, 0);
+
             fetchData();
           } catch (err) {
             console.error(err);

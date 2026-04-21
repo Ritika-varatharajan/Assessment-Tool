@@ -1,24 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import styles from "./test.module.css";
 
 const API = "https://assessment-tool-1-2e4i.onrender.com";
 
+// ✅ TYPES
+type Question = {
+  question: string;
+  type: "mcq" | "truefalse" | "short" | "essay";
+  options?: string[];
+  correctAnswer: string;
+  marks?: number;
+};
+
+type Assessment = {
+  id: string;
+  title: string;
+  timeLimit: number;
+  educatorId?: string;
+  questions: Question[];
+};
+
+type Result = {
+  assessmentId: string;
+  studentId: string;
+};
+
 export default function TestPage() {
   const { id } = useParams();
   const router = useRouter();
 
-  const [assessment, setAssessment] = useState<any>(null);
-  const [answers, setAnswers] = useState<any>({});
+  const [assessment, setAssessment] = useState<Assessment | null>(null);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
 
-  let student: any = {};
+  let student: { id?: string } = {};
   try {
     student =
       typeof window !== "undefined"
@@ -28,14 +50,121 @@ export default function TestPage() {
     student = {};
   }
 
+  // ✅ FIX 1: useCallback (prevents ESLint dependency warning)
+  const fetchAssessment = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API}/assessments/${id}`);
+
+      const fixedQuestions: Question[] = (res.data.questions || []).map(
+        (q: Partial<Question> & { answer?: string }) => ({
+          ...q,
+          correctAnswer: q.correctAnswer || q.answer || "",
+          options:
+            q.type === "mcq"
+              ? q.options || []
+              : q.type === "truefalse"
+              ? ["True", "False"]
+              : [],
+        })
+      );
+
+      setAssessment({ ...res.data, questions: fixedQuestions });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load test");
+    }
+  }, [id]);
+
+  const checkIfAlreadySubmitted = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API}/results`);
+
+      const already = res.data.find(
+        (r: Result) =>
+          String(r.assessmentId) === String(id) &&
+          String(r.studentId) === String(student?.id)
+      );
+
+      if (already) router.push("/student");
+    } catch (err) {
+      console.error(err);
+    }
+  }, [id, router, student?.id]);
+
+  const handleChange = (qIndex: number, value: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [qIndex]: value,
+    }));
+  };
+
+  const handleSubmit = useCallback(
+    async (auto = false) => {
+      if (!assessment || submitted) return;
+
+      if (!auto && Object.keys(answers).length === 0) {
+        alert("Please answer at least one question");
+        return;
+      }
+
+      setSubmitted(true);
+
+      let totalScore = 0;
+
+      assessment.questions.forEach((q, index) => {
+        const userAns = String(answers[index] || "").trim().toLowerCase();
+        const correctAns = String(q.correctAnswer || "")
+          .trim()
+          .toLowerCase();
+
+        if (userAns === correctAns) {
+          totalScore += q.marks || 1;
+        }
+      });
+
+      try {
+        await axios.post(`${API}/results`, {
+          assessmentId: String(id),
+          studentId: String(student?.id),
+          educatorId: assessment.educatorId,
+          score: totalScore,
+          completed: true,
+          submittedAt: new Date().toISOString(),
+        });
+
+        setScore(totalScore);
+        setShowResult(true);
+
+        setTimeout(() => {
+          router.push("/student");
+        }, 5000);
+      } catch (err) {
+        console.error(err);
+        alert("Submission failed");
+        setSubmitted(false);
+      }
+    },
+    [assessment, submitted, answers, id, student?.id, router]
+  );
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
+
+  // ✅ EFFECTS
+
   useEffect(() => {
     fetchAssessment();
     checkIfAlreadySubmitted();
-  }, []);
+  }, [fetchAssessment, checkIfAlreadySubmitted]);
 
+  // ✅ FIX 2: avoid direct setState warning
   useEffect(() => {
     if (assessment?.timeLimit) {
-      setTimeLeft(assessment.timeLimit * 60);
+      const time = assessment.timeLimit * 60;
+      setTimeLeft(time);
     }
   }, [assessment]);
 
@@ -54,103 +183,7 @@ export default function TestPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [assessment, submitted]);
-
-  const fetchAssessment = async () => {
-    try {
-      const res = await axios.get(`${API}/assessments/${id}`);
-
-      // ✅ FIX: normalize old data
-      const fixedQuestions = (res.data.questions || []).map((q: any) => ({
-        ...q,
-        correctAnswer: q.correctAnswer || q.answer || "",
-        options:
-          q.type === "mcq"
-            ? q.options || []
-            : q.type === "truefalse"
-            ? ["True", "False"]
-            : [],
-      }));
-
-      setAssessment({ ...res.data, questions: fixedQuestions });
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load test");
-    }
-  };
-
-  const checkIfAlreadySubmitted = async () => {
-    try {
-      const res = await axios.get(`${API}/results`);
-
-      const already = res.data.find(
-        (r: any) =>
-          String(r.assessmentId) === String(id) &&
-          String(r.studentId) === String(student?.id)
-      );
-
-      if (already) router.push("/student");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleChange = (qIndex: number, value: string) => {
-    setAnswers((prev: any) => ({
-      ...prev,
-      [qIndex]: value,
-    }));
-  };
-
-  const handleSubmit = async (auto = false) => {
-    if (!assessment || submitted) return;
-
-    if (!auto && Object.keys(answers).length === 0) {
-      alert("Please answer at least one question");
-      return;
-    }
-
-    setSubmitted(true);
-
-    let totalScore = 0;
-
-    assessment.questions.forEach((q: any, index: number) => {
-      const userAns = String(answers[index] || "").trim().toLowerCase();
-      const correctAns = String(q.correctAnswer || "").trim().toLowerCase();
-
-      if (userAns === correctAns) {
-        totalScore += q.marks || 1;
-      }
-    });
-
-    try {
-      await axios.post(`${API}/results`, {
-        assessmentId: String(id),
-        studentId: String(student?.id),
-        educatorId: assessment.educatorId, // ✅ FIX: send to correct educator
-        score: totalScore,
-        completed: true,
-        submittedAt: new Date().toISOString(),
-      });
-
-      setScore(totalScore);
-      setShowResult(true);
-
-      setTimeout(() => {
-        router.push("/student");
-      }, 5000);
-    } catch (err) {
-      console.error(err);
-      alert("Submission failed");
-      setSubmitted(false);
-    }
-  };
-
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
-  };
+  }, [assessment, submitted, handleSubmit]);
 
   if (!assessment) return <p className={styles.loading}>Loading...</p>;
 
@@ -166,15 +199,15 @@ export default function TestPage() {
         </p>
 
         <div className={styles.questions}>
-          {assessment.questions?.map((q: any, index: number) => (
+          {assessment.questions.map((q, index) => (
             <div key={index} className={styles.questionBox}>
               <p className={styles.question}>
                 {index + 1}. {q.question}
               </p>
 
-              {/* ✅ MCQ */}
+              {/* MCQ */}
               {q.type === "mcq" &&
-                q.options?.map((opt: string, i: number) => (
+                q.options?.map((opt, i) => (
                   <label key={i} className={styles.option}>
                     <input
                       type="radio"
@@ -186,7 +219,7 @@ export default function TestPage() {
                   </label>
                 ))}
 
-              {/* ✅ TRUE/FALSE FIXED */}
+              {/* TRUE/FALSE */}
               {q.type === "truefalse" &&
                 ["True", "False"].map((opt) => (
                   <label key={opt} className={styles.option}>
@@ -200,7 +233,7 @@ export default function TestPage() {
                   </label>
                 ))}
 
-              {/* ✅ SHORT */}
+              {/* SHORT */}
               {q.type === "short" && (
                 <input
                   className={styles.input}
@@ -212,7 +245,7 @@ export default function TestPage() {
                 />
               )}
 
-              {/* ✅ ESSAY */}
+              {/* ESSAY */}
               {q.type === "essay" && (
                 <textarea
                   className={styles.textarea}

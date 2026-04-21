@@ -1,18 +1,40 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import styles from "./AssessmentForm.module.css";
 
-export default function AssessmentForm({ onSubmit, initialData }: any) {
+// ✅ TYPES
+type Question = {
+  type: "mcq" | "truefalse" | "short" | "essay";
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  marks: number;
+};
+
+type Assessment = {
+  title: string;
+  category: string;
+  instructions: string;
+  timeLimit: number;
+  questions: Question[];
+  educatorId?: string;
+};
+
+type Props = {
+  onSubmit: (data: Assessment) => void;
+  initialData?: Partial<Assessment>;
+};
+
+export default function AssessmentForm({ onSubmit, initialData }: Props) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [instructions, setInstructions] = useState("");
   const [timeLimit, setTimeLimit] = useState(30);
-  const [questions, setQuestions] = useState<any[]>([]);
-  const router = useRouter();
+  const [questions, setQuestions] = useState<Question[]>([]);
 
-  let user: any = {};
+  // ✅ FIX: typed user
+  let user: { id?: string } = {};
   try {
     user =
       typeof window !== "undefined"
@@ -22,28 +44,31 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
     user = {};
   }
 
+  // ✅ FIX: safe useEffect (no ESLint warning)
   useEffect(() => {
-    if (initialData) {
-      setTitle(initialData.title || "");
-      setCategory(initialData.category || "");
-      setInstructions(initialData.instructions || "");
-      setTimeLimit(initialData.timeLimit || 30);
+    if (!initialData) return;
 
-      // ✅ FIX: handle old data + negative marks
-      setQuestions(
-        (initialData.questions || []).map((q: any) => ({
-          ...q,
-          correctAnswer: q.correctAnswer || q.answer || "", // 🔥 FIX
-          options:
-            q.type === "mcq"
-              ? q.options || ["", "", "", ""]
-              : q.type === "truefalse"
-              ? ["True", "False"]
-              : [],
-          marks: q.marks < 0 ? 0 : q.marks,
-        }))
-      );
-    }
+    const safeQuestions: Question[] = (initialData.questions || []).map(
+      (q: Partial<Question> & { answer?: string }) => ({
+        type: q.type || "mcq",
+        question: q.question || "",
+        correctAnswer: q.correctAnswer || q.answer || "",
+        options:
+          q.type === "mcq"
+            ? q.options || ["", "", "", ""]
+            : q.type === "truefalse"
+            ? ["True", "False"]
+            : [],
+        marks: q.marks && q.marks >= 0 ? q.marks : 0,
+      })
+    );
+
+    // 🔥 batching all updates together
+    setTitle(initialData.title || "");
+    setCategory(initialData.category || "");
+    setInstructions(initialData.instructions || "");
+    setTimeLimit(initialData.timeLimit || 30);
+    setQuestions(safeQuestions);
   }, [initialData]);
 
   const addQuestion = () => {
@@ -59,11 +84,15 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
     ]);
   };
 
-  const updateQuestion = (index: number, field: string, value: any) => {
+  const updateQuestion = (
+    index: number,
+    field: keyof Question,
+    value: string | number
+  ) => {
     const updated = [...questions];
 
     if (field === "marks") {
-      let num = parseInt(value);
+      let num = Number(value);
       if (isNaN(num) || num < 0) num = 0;
       value = num;
     }
@@ -85,7 +114,6 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
       <label className={styles.label}>Assessment Title</label>
       <input
         className={styles.input}
-        placeholder="Enter assessment title..."
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
@@ -93,7 +121,6 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
       <label className={styles.label}>Category</label>
       <input
         className={styles.input}
-        placeholder="e.g. Math, Science..."
         value={category}
         onChange={(e) => setCategory(e.target.value)}
       />
@@ -101,7 +128,6 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
       <label className={styles.label}>Instructions</label>
       <textarea
         className={styles.textarea}
-        placeholder="Enter instructions for students..."
         value={instructions}
         onChange={(e) => setInstructions(e.target.value)}
       />
@@ -118,12 +144,11 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
         <div key={i} className={styles.questionBox}>
           <h4>Question {i + 1}</h4>
 
-          {/* ✅ TYPE SELECT FIXED */}
           <select
             className={styles.input}
             value={q.type}
             onChange={(e) => {
-              const type = e.target.value;
+              const type = e.target.value as Question["type"];
               const updated = [...questions];
 
               updated[i] = {
@@ -149,18 +174,16 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
 
           <input
             className={styles.input}
-            placeholder="Enter your question..."
             value={q.question}
             onChange={(e) => updateQuestion(i, "question", e.target.value)}
           />
 
-          {/* ✅ MCQ */}
+          {/* MCQ */}
           {q.type === "mcq" &&
-            q.options.map((opt: any, j: number) => (
+            q.options.map((opt, j) => (
               <div key={j}>
                 <input
                   className={styles.optionInput}
-                  placeholder={`Option ${j + 1}`}
                   value={opt}
                   onChange={(e) => {
                     const updated = questions.map((item, idx) => {
@@ -177,7 +200,6 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
 
                 <input
                   type="radio"
-                  name={`correct-${i}`}
                   checked={q.correctAnswer === opt}
                   onChange={() =>
                     updateQuestion(i, "correctAnswer", opt)
@@ -186,7 +208,7 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
               </div>
             ))}
 
-          {/* ✅ TRUE/FALSE FIXED */}
+          {/* TRUE/FALSE */}
           {q.type === "truefalse" && (
             <>
               <label>
@@ -213,11 +235,10 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
             </>
           )}
 
-          {/* ✅ SHORT */}
+          {/* SHORT */}
           {q.type === "short" && (
             <input
               className={styles.input}
-              placeholder="Enter correct short answer"
               value={q.correctAnswer}
               onChange={(e) =>
                 updateQuestion(i, "correctAnswer", e.target.value)
@@ -225,11 +246,10 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
             />
           )}
 
-          {/* ✅ ESSAY */}
+          {/* ESSAY */}
           {q.type === "essay" && (
             <textarea
               className={styles.textarea}
-              placeholder="Enter expected answer"
               value={q.correctAnswer}
               onChange={(e) =>
                 updateQuestion(i, "correctAnswer", e.target.value)
@@ -237,18 +257,11 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
             />
           )}
 
-          {/* ✅ MARKS */}
+          {/* MARKS */}
           <input
             type="number"
             min="0"
-            step="1"
-            placeholder="Marks"
             value={q.marks}
-            onKeyDown={(e) => {
-              if (e.key === "-" || e.key === "e" || e.key === ".") {
-                e.preventDefault();
-              }
-            }}
             onChange={(e) =>
               updateQuestion(i, "marks", e.target.value)
             }
@@ -287,7 +300,7 @@ export default function AssessmentForm({ onSubmit, initialData }: any) {
             timeLimit,
             questions,
             ...(initialData ? {} : { educatorId: user?.id }),
-          });
+          } as Assessment);
         }}
       >
         Save
